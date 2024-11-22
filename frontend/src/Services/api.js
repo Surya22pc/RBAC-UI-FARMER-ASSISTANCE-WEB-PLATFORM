@@ -1,9 +1,9 @@
 import axios from 'axios';
 
-const URL = 'https://farmer-assistance.onrender.com';
-// const URL = 'http://localhost:7000';
-export const API_URL = 'https://farmer-assistance.onrender.com';
-// export const API_URL = 'http://localhost:7000';
+// const URL = 'https://farmer-assistance.onrender.com';
+const URL = 'http://localhost:7000';
+// export const API_URL = 'https://farmer-assistance.onrender.com';
+export const API_URL = 'http://localhost:7000';
 
 export const authenticateSignUp = async(data,token) => {
     try {
@@ -89,3 +89,39 @@ export const deleteMessagesWhereUserIsNull = async(id) => {
         console.log("Error while calling deleteMessage api",error)
     }
 }
+
+export const initiatePayment = async (orderId, amount) => {
+    try {
+        const response = await axios.post(`${API_URL}/payments`, {
+            orderId,
+            amount
+        });
+        return response.data;
+    } catch (error) {
+        console.error('Error initiating payment:', error);
+        throw error;
+    }
+};
+
+export const validatePayment = async (paymentDetails) => {
+    try {
+        const response = await axios.post(`${API_URL}/payments/validate`, paymentDetails);
+        return response.data;
+    } catch (error) {
+        console.error('Error validating payment:', error);
+        throw error;
+    }
+};
+
+export const sendPaymentDetails = async (orderId, paymentId, paymentStatus) => {
+    try {
+        const response = await axios.put(`${API_URL}/order/updateStatus/${orderId}`, {
+            paymentId,
+            paymentStatus
+        });
+        return response.data;
+    } catch (error) {
+        console.error('Error sending payment details:', error);
+        throw error;
+    }
+};

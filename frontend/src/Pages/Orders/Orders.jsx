@@ -13,7 +13,7 @@ const Orders = () => {
     const dispatch = useDispatch();
     const orderData = useSelector((state) => state.getOrders);
     const { orders, error } = orderData;
-    
+    const sortedOrders = orders.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
     useEffect(() => {
         dispatch(getOrders(userId));
     }, [dispatch, userId]);
@@ -22,7 +22,7 @@ const Orders = () => {
             {error && <h1 className="pt-2">{error}</h1>}
             <h2 className="text-2xl font-bold mb-6 flex  items-center gap-2"><CgShoppingBag />Orders</h2>
             <div className="items h-[80vh] overflow-y-auto" style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}>
-                {orders && orders.length > 0 ? (
+                {sortedOrders && sortedOrders.length > 0 ? (
                     <div className="grid gap-6 grid-cols-1 ">
                         {orders.map(order => (
                             <div key={order._id} className="bg-white border rounded-lg p-6 text-md">

@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { TiDelete } from "react-icons/ti";
 import { removeFromCart, updateCart } from '../../Redux/Actions/cartActions';
-import { API_URL, createOrder } from "../../Services/api";
+import { API_URL, createOrder, initiatePayment, sendPaymentDetails, validatePayment } from "../../Services/api";
 import { IoBagHandleSharp } from "react-icons/io5";
 import { DataContext } from '../../Context/DataProvider';
 
@@ -81,8 +81,48 @@ const Cart = () => {
         try {
             const orderResponse = await createOrder(orderData, token);
             console.log('Order created:', orderResponse);
-            alert('Order created successfully! Proceed to payment.');
-            navigate('/order-success');
+            const paymentResponse = await initiatePayment(orderResponse._id, totalToPay );
+            console.log('Payment initiated:', paymentResponse);
+            const options = {
+                key: 'rzp_test_kzINWtT3ElrntA', 
+                amount: {totalToPay}, 
+                currency: 'INR',
+                name: 'FarmFreshz',
+                description: 'We provide best Quality Services.',
+                order_id: paymentResponse.id,
+                handler: async (response) => {
+                    const paymentDetails = {
+                        razorpay_payment_id: response.razorpay_payment_id,
+                        razorpay_order_id: response.razorpay_order_id,
+                        razorpay_signature: response.razorpay_signature
+                    };
+                    try {
+                        const validationResponse = await validatePayment(paymentDetails);
+                        console.log('Payment validation response:', validationResponse);
+                        if (validationResponse.status === 'success') {
+                            await sendPaymentDetails(orderResponse.order._id, validationResponse.payment_id, validationResponse.status)
+                            alert('Payment successful!');
+                            navigate('/order-success');
+                        } else {
+                            alert('Payment validation failed.');
+                        }
+                    } catch (error) {
+                        console.error('Error validating payment:', error);
+                        alert('Payment validation failed.');
+                    }
+                },
+                prefill: {
+                    name: 'Customer Name',
+                    email: 'customer@example.com',
+                    contact: '9999999999'
+                },
+                theme: {
+                    color: '#8EC44C'
+                }
+            };
+
+            const rzp = new window.Razorpay(options);
+        rzp.open();
         } catch (error) {
             console.error('Error creating order:', error);
         }
