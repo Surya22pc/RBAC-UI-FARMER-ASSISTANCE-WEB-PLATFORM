@@ -23,6 +23,12 @@ const orderSchema = new mongoose.Schema({
         type: Date,
         default: Date.now
     },
+    paymentId:{
+        type:String
+    },
+    paymentStatus:{
+        type: String
+    }
 })
 
 const Order = mongoose.model('Order', orderSchema)

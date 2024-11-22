@@ -53,10 +53,12 @@ export const getOrdersByUserId = async (req, res) => {
 export const updateOrderStatus = async (req, res) => {
     try {
         const { orderId } = req.params;
-        const { status } = req.body;
+        const { status, paymentId, paymentStatus } = req.body;
         const order = await Order.findByIdAndUpdate(orderId, 
             { 
                 status, 
+                paymentId, 
+                paymentStatus 
             }, 
             { new: true });
 

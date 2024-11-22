@@ -8,6 +8,7 @@ import ProductRoutes from './Routes/productRoutes.js';
 import AdminRoutes from './Routes/adminRoutes.js';
 import OrderRoutes from './Routes/orderRoutes.js';
 import MessageRoutes from './Routes/messageRoutes.js';
+import paymentRoutes from './Routes/paymentRoutes.js';
 dotenv.config();
 
 const app = express();
@@ -20,6 +21,7 @@ app.use('/product', ProductRoutes);
 app.use('/admin', AdminRoutes);
 app.use('/order', OrderRoutes);
 app.use('/message', MessageRoutes);
+app.use('/payments',paymentRoutes)
 app.use('/uploads', express.static('uploads'));
 const port = process.env.PORT || 7000;
 const USERNAME = process.env.DB_USERNAME;
